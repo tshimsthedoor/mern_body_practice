@@ -52,8 +52,16 @@ UserSchema.method = {
   },
   makeSalt: function () {
     return Math.round(new Date().valueOf() * Math.random()) + "";
-    
   },
 };
+
+UserSchema.path("hashed_password").validate(function (v) {
+  if (this._password && this._password.length < 7) {
+    this.invalidate("password", "Password must be at least 7 characters.");
+  }
+  if (this.isNew && !this._password) {
+    this.invalidate("password", "Password is required");
+  }
+}, null);
 
 export default mongoose.model("User", UserSchema);
